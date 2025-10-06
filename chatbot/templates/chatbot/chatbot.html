@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BizBot ERP Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center relative overflow-hidden">
+  <!-- Hero Section -->
+  <div id="hero-section" class="w-full max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 items-center gap-8 transition-all duration-500">
+    <div class="text-gray-800 order-2 md:order-1">
+      <h2 class="text-5xl font-bold mb-6">
+        Streamline Your Business with <span class="text-blue-600">ERP+</span>
+      </h2>
+      <p class="text-lg mb-6 text-gray-600">
+        Simplify your accounting, inventory, HR, and customer management — all in one intelligent platform.
+        Let <strong>BizBot</strong> guide you to your personalized ERP solution today.
+      </p>
+      <a href="/erp/signup/" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-700 transition">
+        🚀 Get Started Now
+      </a>
+    </div>
+
+    <div class="flex justify-center order-1 md:order-2">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712103.png" alt="ERP Illustration" class="w-80 h-80 object-contain" />
+    </div>
+  </div>
+
+  <!-- Floating Button -->
+  <button id="chat-toggle" class="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition text-2xl z-50">
+    💬
+  </button>
+
+  <!-- Half-Screen Chat Overlay -->
+  <div
+    id="chat-overlay"
+    class="fixed top-0 right-0 h-full w-full md:w-1/2 bg-white/95 backdrop-blur-sm hidden flex flex-col transition-transform duration-500 transform translate-x-full z-40"
+  >
+    <!-- Chat Header -->
+    <div class="bg-blue-600 text-white px-5 py-4 flex justify-between items-center shadow-md">
+      <h1 class="font-semibold text-lg flex items-center gap-2">🤖 BizBot — ERP Assistant</h1>
+      <button id="chat-close" class="text-white text-2xl font-bold hover:text-gray-200">&times;</button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat-container" class="flex-1 overflow-y-auto px-3 py-2 bg-gray-50 space-y-3 text-sm">
+      <div id="chat-log" class="flex flex-col space-y-2"></div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="flex border-t border-gray-200 bg-white px-3 py-2">
+      <input
+        id="chat-input"
+        type="text"
+        placeholder="Type your message..."
+        class="flex-1 border-0 px-3 py-2 text-gray-700 focus:outline-none text-sm bg-transparent"
+      />
+      <button
+        id="send-btn"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition font-semibold text-sm ml-2"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById("chat-toggle");
+    const closeBtn = document.getElementById("chat-close");
+    const chatOverlay = document.getElementById("chat-overlay");
+    const heroSection = document.getElementById("hero-section");
+    const input = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+    const chatLog = document.getElementById("chat-log");
+    let state = {};
+
+    // Slide-in chat toggle
+    toggleBtn.addEventListener("click", () => {
+      chatOverlay.classList.remove("hidden");
+      setTimeout(() => chatOverlay.classList.remove("translate-x-full"), 10);
+      heroSection.classList.add("blur-sm", "opacity-50");
+    });
+
+    // Slide-out close
+    closeBtn.addEventListener("click", () => {
+      chatOverlay.classList.add("translate-x-full");
+      setTimeout(() => chatOverlay.classList.add("hidden"), 300);
+      heroSection.classList.remove("blur-sm", "opacity-50");
+    });
+
+    // Append message
+    function appendMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.classList.add("px-3", "py-2", "rounded-lg", "max-w-[80%]", "break-words", "w-fit");
+      if (sender === "user") {
+        msg.classList.add("bg-blue-600", "text-white", "ml-auto");
+      } else {
+        msg.classList.add("bg-gray-200", "text-gray-800");
+      }
+      msg.innerHTML = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 underline" target="_blank">$1</a>');
+      chatLog.appendChild(msg);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Send message to Django backend
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage("user", message);
+      input.value = "";
+
+      try {
+        const response = await fetch("/message/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, state }),
+        });
+
+        if (!response.ok) throw new Error("Server error");
+
+        const data = await response.json();
+        if (data.error) {
+          appendMessage("bot", "⚠️ Oops! Something went wrong. Please try again.");
+        } else {
+          appendMessage("bot", data.message);
+          state = data.state || state;
+        }
+      } catch (err) {
+        appendMessage("bot", "❌ Network error — please check your connection.");
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // Load initial greeting when page opens
+    window.onload = () => {
+      fetch("/chat/message/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "", state: {} }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          appendMessage("bot", data.message);
+          state = data.state;
+        })
+        .catch(() => {
+          appendMessage("bot", "👋 Hello! I'm BizBot, your ERP assistant. How can I help you today?");
+        });
+    };
+  </script>
+</body>
+</html>

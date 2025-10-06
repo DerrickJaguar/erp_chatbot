@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800">ERP Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, {{ user.first_name }}!</span>
+                    <a href="{% url 'erp:logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white mb-8">
+            <h2 class="text-3xl font-bold mb-2">Welcome to ERP, {{ user.first_name }}! 🎉</h2>
+            <p class="text-lg">{% if erp_user %}{{ erp_user.company }}{% else %}Your Company{% endif %}</p>
+            <p class="mt-4 text-indigo-100">You're all set! Start exploring your ERP dashboard and streamline your business operations.</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-semibold">Total Orders</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">156</p>
+                    </div>
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl">
+                        📦
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4">↑ 12% from last month</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-semibold">Revenue</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">$45.2K</p>
+                    </div>
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl">
+                        💰
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4">↑ 8% from last month</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-semibold">Customers</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">892</p>
+                    </div>
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-2xl">
+                        👥
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4">↑ 23% from last month</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-semibold">Products</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">342</p>
+                    </div>
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-2xl">
+                        🏷️
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4">↑ 5% from last month</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Quick Actions</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-4 px-6 rounded-lg transition">
+                    ➕ Create New Order
+                </button>
+                <button class="bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold py-4 px-6 rounded-lg transition">
+                    👤 Add Customer
+                </button>
+                <button class="bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-4 px-6 rounded-lg transition">
+                    📊 View Reports
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Recent Activity</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b pb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                            📦
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">New order received</p>
+                            <p class="text-sm text-gray-500">Order #1234 from Acme Corp</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">2 hours ago</span>
+                </div>
+
+                <div class="flex items-center justify-between border-b pb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                            💰
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Payment received</p>
+                            <p class="text-sm text-gray-500">$2,500 from TechStart Inc</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">5 hours ago</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+                            👤
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">New customer added</p>
+                            <p class="text-sm text-gray-500">Global Industries joined</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">1 day ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-6 border-t">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p>&copy; 2025 ERP. All rights reserved. | <a href="/" class="text-indigo-600 hover:text-indigo-800">Chat with Bot</a></p>
+        </div>
+    </footer>
+</body>
+</html>
