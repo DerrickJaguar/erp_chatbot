@@ -15,48 +15,42 @@ A Django-based chatbot that guides customers to sign up for ERP software using c
 
 ### 1. Clone/Extract the Project
 
-```bash
+bash
 cd erp_chatbot
-```
 
 ### 2. Create Virtual Environment
 
-```bash
+bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+venv\Scripts\activate
 
 ### 3. Install Dependencies
 
-```bash
+bash
 pip install -r requirements.txt
-```
 
 ### 4. Configure Environment Variables
 
-```bash
+bash
 cp .env.example .env
+
 # Edit .env and add your OPENAI_API_KEY (optional)
-```
 
 ### 5. Run Migrations
 
-```bash
+bash
 python manage.py makemigrations
 python manage.py migrate
-```
 
 ### 6. Create Superuser (Optional)
 
-```bash
+bash
 python manage.py createsuperuser
-```
 
 ### 7. Run Development Server
 
-```bash
+bash
 python manage.py runserver
-```
 
 ### 8. Access the Application
 
@@ -95,12 +89,3 @@ python manage.py runserver
 - SQLite
 - Tailwind CSS
 - Vanilla JavaScript
-
-## License
-
-MIT License
-
-```
-
-
-```

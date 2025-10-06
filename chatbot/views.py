@@ -6,8 +6,7 @@ import json
 import traceback
 from .models import Lead
 
-# Optional: keep recent chat history per session (in memory)
-SESSION_MEMORY_LIMIT = 10  # number of messages to remember per user
+SESSION_MEMORY_LIMIT = 10  
 
 
 def chat_view(request):
@@ -40,13 +39,13 @@ def process_message(user_message, state):
     user_data = state.get('data', {})
     chat_history = state.get('history', [])
 
-    # Append new message to chat history
+    
     chat_history.append({"role": "user", "content": user_message})
     if len(chat_history) > SESSION_MEMORY_LIMIT:
         chat_history = chat_history[-SESSION_MEMORY_LIMIT:]
 
     try:
-        # Step 0: Initial greeting
+        
         if step == 0:
             return {
                 'message': (
@@ -57,7 +56,7 @@ def process_message(user_message, state):
                 'state': {'step': 1, 'data': user_data, 'history': chat_history}
             }
 
-        # Step 1: Name
+        
         elif step == 1:
             user_data['name'] = user_message
             ai_response = get_ai_response(
@@ -70,7 +69,7 @@ def process_message(user_message, state):
                 'state': {'step': 2, 'data': user_data, 'history': chat_history}
             }
 
-        # Step 2: Company name
+        
         elif step == 2:
             user_data['company'] = user_message
             ai_response = get_ai_response(
@@ -83,7 +82,7 @@ def process_message(user_message, state):
                 'state': {'step': 3, 'data': user_data, 'history': chat_history}
             }
 
-        # Step 3: Email and lead save
+        
         elif step == 3:
             user_data['email'] = user_message
             Lead.objects.create(
@@ -105,13 +104,13 @@ def process_message(user_message, state):
                 'completed': True
             }
 
-        # Step 4+: Free-form AI chat
+        
         else:
             lower_msg = user_message.lower()
             signup_link = getattr(settings, 'ERP_SIGNUP_URL', '/erp/signup/')
             login_link = getattr(settings, 'ERP_LOGIN_URL', '/erp/login/')
 
-        # Detect intent for sign up or login
+        
         if any(word in lower_msg for word in ["sign up", "signup", "register", "create account"]):
             return {
                 'message': f"✨ Awesome! You can sign up here: [Create your ERP account]({signup_link})",
@@ -148,7 +147,7 @@ def get_ai_response(prompt, user_data, chat_history):
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
 
-        # Keep last few messages as context
+       
         context_messages = chat_history[-SESSION_MEMORY_LIMIT:]
         system_prompt = (
             "You are BizBot, a friendly ERP assistant. "
@@ -163,7 +162,7 @@ def get_ai_response(prompt, user_data, chat_history):
         messages.append({"role": "user", "content": prompt})
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # ✅ cheaper and good quality
+            model="gpt-4o-mini",  
             messages=messages,
             max_tokens=200,
             temperature=0.7,
@@ -171,7 +170,7 @@ def get_ai_response(prompt, user_data, chat_history):
         )
 
         reply = response.choices[0].message.content.strip()
-        # Save assistant reply to history
+        
         chat_history.append({"role": "assistant", "content": reply})
         return reply
 
